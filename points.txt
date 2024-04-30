@@ -1,0 +1,153 @@
+Attribute VB_Name = "points"
+
+Sub if_bu_is_not_exists_in_cluster_tbl_point_2_1(ByVal pN As Integer, ByVal pDct As Dictionary)
+            insert_query = "" & vbNewLine & _
+                            "insert into [new_shablon$] " & vbNewLine & _
+                            "select *" & vbNewLine & _
+                            "from [shablon$]" & vbNewLine & _
+                            "where 1=1" & vbNewLine & _
+                            "        and supplier = '{supplier}'" & vbNewLine & _
+                            "        and tg = '{tg}'" & vbNewLine & _
+                            "        and ng = '{ng}'" & vbNewLine & _
+                            "        and bu = '{n}'"
+                            
+            insert_query = Replace(insert_query, "{supplier}", pDct.Item("supplier"))
+            insert_query = Replace(insert_query, "{tg}", pDct.Item("tg"))
+            insert_query = Replace(insert_query, "{ng}", pDct.Item("ng"))
+            insert_query = Replace(insert_query, "{n}", pN)
+            
+            'Debug.Print insert_query
+            Con.Execute insert_query
+End Sub
+
+
+Sub if_wh_is_not_clustered_point_2_3_1(ByVal pN As Integer, ByVal pDct As Dictionary)
+
+       insert_query = "" & vbNewLine & _
+                            "insert into [new_shablon$] " & vbNewLine & _
+                            "select *" & vbNewLine & _
+                            "from [shablon$]" & vbNewLine & _
+                            "where 1=1" & vbNewLine & _
+                            "        and supplier = '{supplier}'" & vbNewLine & _
+                            "        and tg = '{tg}'" & vbNewLine & _
+                            "        and ng = '{ng}'" & vbNewLine & _
+                            "        and (bu = '{n}' or bu_replenishment = '{n}')"
+                            
+            insert_query = Replace(insert_query, "{supplier}", pDct.Item("supplier"))
+            insert_query = Replace(insert_query, "{tg}", pDct.Item("tg"))
+            insert_query = Replace(insert_query, "{ng}", pDct.Item("ng"))
+            insert_query = Replace(insert_query, "{n}", pN)
+            
+
+            
+            
+            update_query = "" & vbNewLine & _
+            "update [new_shablon$]" & vbNewLine & _
+            "set replenishment_model = 'Поставщик', bu_replenishment = null" & vbNewLine & _
+            "where 1=1" & vbNewLine & _
+            "        and supplier = '{supplier}'" & vbNewLine & _
+            "        and tg = '{tg}'" & vbNewLine & _
+            "        and ng = '{ng}'" & vbNewLine & _
+            "        and bu = '{n}'"
+
+            update_query = Replace(update_query, "{supplier}", pDct.Item("supplier"))
+            update_query = Replace(update_query, "{tg}", pDct.Item("tg"))
+            update_query = Replace(update_query, "{ng}", pDct.Item("ng"))
+            update_query = Replace(update_query, "{n}", pN)
+            
+            
+'Debug.Print insert_query
+'Debug.Print update_query
+
+With Con
+    .BeginTrans
+    .Execute insert_query
+    .Execute update_query
+    .CommitTrans
+End With
+            
+
+End Sub
+
+
+Sub if_wh_is_not_sub_clustered_point_2_4(ByVal pN As Integer, ByVal pDct As Dictionary, ByVal pWhList As Variant)
+
+cluster_wh_list_sql = "insert into [new_shablon$]" & vbNewLine & _
+                            "select *" & vbNewLine & _
+                            "from [shablon$]" & vbNewLine & _
+                            "where 1 = 1" & vbNewLine & _
+                                      "and supplier = '{supplier}'" & vbNewLine & _
+                                      "and tg = '{tg}'" & vbNewLine & _
+                                      "and ng = '{ng}'" & vbNewLine & _
+                                      "and IIf(bu_replenishment is null, '-', bu_replenishment) not in ('{n}', " & Join(pWhList, ",") & ")"
+                                      
+
+
+                            
+    
+    cluster_wh_list_sql = Replace(cluster_wh_list_sql, "{supplier}", pDct.Item("supplier"))
+    cluster_wh_list_sql = Replace(cluster_wh_list_sql, "{tg}", pDct.Item("tg"))
+    cluster_wh_list_sql = Replace(cluster_wh_list_sql, "{ng}", pDct.Item("ng"))
+    cluster_wh_list_sql = Replace(cluster_wh_list_sql, "{n}", pN)
+    
+'    Debug.Print cluster_wh_list_sql
+    Con.Execute cluster_wh_list_sql
+    
+End Sub
+
+Sub if_wh_is_sub_clustered_point_2_5(ByVal pN As Integer, ByVal pDct As Dictionary, ByVal pWhList As Variant, Optional ByVal flag_replenishment_model As Integer = 0)
+
+insert_query = "insert into [new_shablon$]" & vbNewLine & _
+                "select *" & vbNewLine & _
+                "from [shablon$]" & vbNewLine & _
+                "where 1=1" & vbNewLine & _
+                "        and supplier = '{supplier}'" & vbNewLine & _
+                "        and tg  = '{tg}'" & vbNewLine & _
+                "        and ng  = '{ng}'" & vbNewLine & _
+                "        and bu_replenishment in ({wh_list})" & vbNewLine & _
+                "        and replenishment_model = 'Поставщик'"
+                
+
+        
+insert_query = Replace(insert_query, "{supplier}", pDct.Item("supplier"))
+insert_query = Replace(insert_query, "{tg}", pDct.Item("tg"))
+insert_query = Replace(insert_query, "{ng}", pDct.Item("ng"))
+insert_query = Replace(insert_query, "{wh_list}", Join(pWhList, ","))
+
+
+update_query = "update [shablon$]" & vbNewLine & _
+                "set bu_replenishment = '{n}'" & vbNewLine & _
+                "where 1=1" & vbNewLine & _
+                "         and supplier = '{supplier}'" & vbNewLine & _
+                "         and tg  = '{tg}'" & vbNewLine & _
+                "         and ng  = '{ng}'" & vbNewLine & _
+                "         and bu_replenishment in ({wh_list})" & vbNewLine & _
+                "         and replenishment_model = 'Бизнес-юнит'"
+
+
+update_query = Replace(update_query, "{supplier}", pDct.Item("supplier"))
+update_query = Replace(update_query, "{tg}", pDct.Item("tg"))
+update_query = Replace(update_query, "{ng}", pDct.Item("ng"))
+update_query = Replace(update_query, "{wh_list}", Join(pWhList, ","))
+
+
+If flag_replenishment_model Then
+    update_query = Replace(update_query, "{n}", "770")
+Else:
+    update_query = Replace(update_query, "{n}", CStr(pN))
+End If
+
+
+'Debug.Print insert_query
+'Debug.Print update_query
+
+With Con
+    .BeginTrans
+    .Execute insert_query
+    .Execute update_query
+    .CommitTrans
+End With
+
+
+End Sub
+
