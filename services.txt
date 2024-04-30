@@ -1,0 +1,97 @@
+Attribute VB_Name = "services"
+Sub clear_new_shablon_sheet()
+
+ThisWorkbook.Sheets("new_shablon").Range("A2:G" & 1048576).Cells.Clear
+
+End Sub
+
+
+Sub clear_shablon()
+ThisWorkbook.Sheets("shablon").Range("A2:G" & 1048576).Cells.Clear
+
+End Sub
+
+Function check_existing_all_columns()
+Library.connectionUnitialization
+
+Dim vErrorsDct As New Dictionary
+
+shablon_sql_query = "select supplier, tg, ng, shablon_id, bu, replenishment_model, bu_replenishment from [shablon$] where 1=2"
+new_shablon_sql_query = "select supplier, tg, ng, shablon_id, bu, replenishment_model, bu_replenishment from [new_shablon$] where 1=2"
+cluster_sql_query = "select bu_vc_site, id_bu_wh, claster_flag, id_bu_claster, region from [cluster$] where 1=2"
+
+On Error Resume Next
+
+rs.Open shablon_sql_query, Con
+rs.Close
+vErrorsDct.Add "shablon", Err.Number
+Err.Clear
+
+rs.Open new_shablon_sql_query, Con
+rs.Close
+vErrorsDct.Add "new_shablon", Err.Number
+Err.Clear
+
+rs.Open cluster_sql_query, Con
+rs.Close
+vErrorsDct.Add "cluster", Err.Number
+Err.Clear
+
+err_num = 0
+For Each i In vErrorsDct
+    If vErrorsDct.Item(i) <> 0 Then
+        err_num = err_num + 1
+        MsgBox "На листе " & i & " некорректные названия полей!"
+    End If
+Next i
+
+Con.Close
+
+
+If err_num > 0 Then
+    check_existing_all_columns = False
+Else:
+    check_existing_all_columns = True
+End If
+
+
+End Function
+
+Sub formatting_data()
+
+
+With ThisWorkbook.Sheets("shablon")
+    .Range("A1").EntireColumn.TextToColumns Destination:=.Range("A1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("B1").EntireColumn.TextToColumns Destination:=.Range("B1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("C1").EntireColumn.TextToColumns Destination:=.Range("C1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("D1").EntireColumn.TextToColumns Destination:=.Range("D1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("E1").EntireColumn.TextToColumns Destination:=.Range("E1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("F1").EntireColumn.TextToColumns Destination:=.Range("F1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("G1").EntireColumn.TextToColumns Destination:=.Range("G1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+End With
+
+
+With ThisWorkbook.Sheets("new_shablon")
+    .Range("A1").EntireColumn.TextToColumns Destination:=.Range("A1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("B1").EntireColumn.TextToColumns Destination:=.Range("B1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("C1").EntireColumn.TextToColumns Destination:=.Range("C1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("D1").EntireColumn.TextToColumns Destination:=.Range("D1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("E1").EntireColumn.TextToColumns Destination:=.Range("E1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("F1").EntireColumn.TextToColumns Destination:=.Range("F1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("G1").EntireColumn.TextToColumns Destination:=.Range("G1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+End With
+
+With ThisWorkbook.Sheets("cluster")
+    .Range("A1").EntireColumn.TextToColumns Destination:=.Range("A1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("B1").EntireColumn.TextToColumns Destination:=.Range("B1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("C1").EntireColumn.TextToColumns Destination:=.Range("C1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("D1").EntireColumn.TextToColumns Destination:=.Range("D1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+    .Range("E1").EntireColumn.TextToColumns Destination:=.Range("E1"), DataType:=xlDelimited, FieldInfo:=Array(1, 2)
+   
+End With
+
+
+Range("E1").EntireColumn.TextToColumns Destination:=Range("E1"), FieldInfo:=Array(1, 2)
+End Sub
+
+

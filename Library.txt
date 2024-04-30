@@ -1,0 +1,107 @@
+Attribute VB_Name = "Library"
+Public Con As New ADODB.Connection
+Public rs As New ADODB.Recordset
+
+
+Sub connectionUnitialization()
+
+Con.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & ThisWorkbook.FullName & ";Extended Properties=""Excel 12.0 Macro;HDR=YES"""
+Con.Open
+
+
+End Sub
+
+Function get_shablons_counter()
+
+vMainLoops_sql = "select distinct supplier, tg, ng from [shablon$]"
+rs.Open vMainLoops_sql, Con
+
+tmp = rs.GetRows
+rs.Close
+get_shablons_counter = tmp
+
+
+End Function
+
+Function checkNCluster(ByVal pN As Integer, Optional ByVal pFlag As Integer = 0)
+
+sql_query = "select {field} from [cluster$] where id_bu_wh = '{n}'"
+
+
+sql_query = Replace(sql_query, "{n}", pN)
+If pFlag Then
+    sql_query = Replace(sql_query, "{field}", "claster_flag")
+Else:
+    sql_query = Replace(sql_query, "{field}", "count(*)")
+End If
+
+
+'Debug.Print sql_query
+
+rs.Open sql_query, Con
+tmp = Int(rs.GetString)
+rs.Close
+
+checkNCluster = tmp
+
+End Function
+
+
+Function get_subclustered_wh_id(ByVal pN As Integer)
+
+Query = "select IIF(claster_flag = 1, id_bu_wh, Mid(region, 1, Instr(region, ""-"")-1)) as wh_id" & vbNewLine & _
+"from [cluster$]" & vbNewLine & _
+"where 1=1" & vbNewLine & _
+"and id_bu_claster = '{n}'" & vbNewLine & _
+"and claster_flag = 0"
+
+Query = Replace(Query, "{n}", pN)
+
+'Debug.Print Query
+
+rs.Open Query, Con
+tmp = rs.GetRows
+rs.Close
+
+ReDim wh_id_list(LBound(tmp, 2) To UBound(tmp, 2)) As String
+For i = LBound(tmp, 2) To UBound(tmp, 2)
+    wh_id_list(i) = "'" & tmp(0, i) & "'"
+Next i
+
+
+get_subclustered_wh_id = wh_id_list
+
+
+End Function
+
+
+
+Function check_bu_chain_for_supplier(ByVal pN As Integer, ByVal pDct As Dictionary)
+
+Query = "select count(*)" & vbNewLine & _
+"from [shablon$]" & vbNewLine & _
+"where 1=1" & vbNewLine & _
+"        and supplier = '{supplier}'" & vbNewLine & _
+"        and tg = '{tg}'" & vbNewLine & _
+"        and ng = '{ng}'" & vbNewLine & _
+"        and bu = '{bu}'" & vbNewLine & _
+"        and replenishment_model = 'Поставщик'"
+
+Query = Replace(Query, "{supplier}", pDct.Item("supplier"))
+Query = Replace(Query, "{tg}", pDct.Item("tg"))
+Query = Replace(Query, "{ng}", pDct.Item("ng"))
+Query = Replace(Query, "{bu}", pN)
+
+'Debug.Print Query
+
+rs.Open Query, Con
+tmp = Int(rs.GetString)
+rs.Close
+
+check_bu_chain_for_supplier = tmp
+
+
+End Function
+
+
+
