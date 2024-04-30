@@ -43,7 +43,7 @@ Sub if_wh_is_not_clustered_point_2_3_1(ByVal pN As Integer, ByVal pDct As Dictio
             
             update_query = "" & vbNewLine & _
             "update [new_shablon$]" & vbNewLine & _
-            "set replenishment_model = 'Поставщик', bu_replenishment = null" & vbNewLine & _
+            "set replenishment_model = 'РџРѕСЃС‚Р°РІС‰РёРє', bu_replenishment = null" & vbNewLine & _
             "where 1=1" & vbNewLine & _
             "        and supplier = '{supplier}'" & vbNewLine & _
             "        and tg = '{tg}'" & vbNewLine & _
@@ -105,7 +105,7 @@ insert_query = "insert into [new_shablon$]" & vbNewLine & _
                 "        and tg  = '{tg}'" & vbNewLine & _
                 "        and ng  = '{ng}'" & vbNewLine & _
                 "        and bu_replenishment in ({wh_list})" & vbNewLine & _
-                "        and replenishment_model = 'Поставщик'"
+                "        and replenishment_model = 'РџРѕСЃС‚Р°РІС‰РёРє'"
                 
 
         
@@ -122,7 +122,7 @@ update_query = "update [shablon$]" & vbNewLine & _
                 "         and tg  = '{tg}'" & vbNewLine & _
                 "         and ng  = '{ng}'" & vbNewLine & _
                 "         and bu_replenishment in ({wh_list})" & vbNewLine & _
-                "         and replenishment_model = 'Бизнес-юнит'"
+                "         and replenishment_model = 'Р‘РёР·РЅРµСЃ-СЋРЅРёС‚'"
 
 
 update_query = Replace(update_query, "{supplier}", pDct.Item("supplier"))

@@ -85,7 +85,7 @@ Query = "select count(*)" & vbNewLine & _
 "        and tg = '{tg}'" & vbNewLine & _
 "        and ng = '{ng}'" & vbNewLine & _
 "        and bu = '{bu}'" & vbNewLine & _
-"        and replenishment_model = 'Поставщик'"
+"        and replenishment_model = 'РџРѕСЃС‚Р°РІС‰РёРє'"
 
 Query = Replace(Query, "{supplier}", pDct.Item("supplier"))
 Query = Replace(Query, "{tg}", pDct.Item("tg"))

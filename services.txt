@@ -41,7 +41,7 @@ err_num = 0
 For Each i In vErrorsDct
     If vErrorsDct.Item(i) <> 0 Then
         err_num = err_num + 1
-        MsgBox "На листе " & i & " некорректные названия полей!"
+        MsgBox "РќР° Р»РёСЃС‚Рµ " & i & " РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ РЅР°Р·РІР°РЅРёСЏ РїРѕР»РµР№!"
     End If
 Next i
 
